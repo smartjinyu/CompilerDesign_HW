@@ -4,7 +4,7 @@ This repository is the homework for Compiler Design, CS340400 in NTHU.
 
 ## HW_1
 
-In Homework 1, we need to implement a scanner using Flex. You need to run `apt-get install flex` first.
+In Homework 1, we need to implement a scanner using Flex. You need to run `apt-get install flex` to install flex first.
 
 ### License
 
