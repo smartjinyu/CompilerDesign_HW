@@ -2,8 +2,11 @@
 #include <string.h>
 int cur_line_num = 1;
 char cur_line_content[256];
+int isSourceOn = 1;
+int isTokenOn = 1;
 void print_token(int token);
 void print_error();
+void newLine();
 typedef enum{
 	TYPE_INT=10,TYPE_DOUBLE,TYPE_BOOL,TYPE_CHAR
 } TYPES;
@@ -59,9 +62,19 @@ MUTTI_COMMENTS	("/*"[^"*/"]* "*/")
 
 IDENTIFIER		([_a-zA-Z][_a-zA-Z0-9]*)
 
+SOURCEOFF		("#pragma source off")
+SOURCEON		("#pragma source on")
+TOKENOFF		("#pragma token off")
+TOKENON			("#pragma token on")
+
 
 %%
 {SINGLE_COMMENT}	{ return OTHER_COMMENT;}
+{SOURCEON}			{ isSourceOn = 1;}
+{SOURCEOFF}			{ isSourceOn = 0;}
+{TOKENON}			{ isTokenOn = 1;}
+{TOKENOFF}			{ isTokenOn = 0;}
+
 {STRING}			{ return TOKEN_STRING; }
 {UNTERM_STRING}		{ print_error();return 0; }
 {CHARACTER}			{ return TOKEN_CHAR; }
@@ -77,9 +90,7 @@ IDENTIFIER		([_a-zA-Z][_a-zA-Z0-9]*)
 {SCI_NOTATION}		{ return TOKEN_SCI;}
 {SCI_INVALID}		{ print_error();return 0; }
 
-[\n]				{ printf("%d:%s\n",cur_line_num,cur_line_content);
-						memset(cur_line_content,0,sizeof(cur_line_content));
-						cur_line_num++; }
+[\n]				{ newLine();}
 [ \t\r]+          	{ return OTHER_SPACE;/* ignore all spaces */ }
 
 "int"				{ BEGIN(VAR_DEF);return TYPE_INT; }
@@ -118,6 +129,7 @@ IDENTIFIER		([_a-zA-Z][_a-zA-Z0-9]*)
 "}"					{ return PUNC_RBRACE; }
 
 {IDENTIFIER}		{ return TOKEN_ID; }
+.					{ print_error(); return 0; }
 
 %%
 
@@ -125,8 +137,9 @@ int main(){
 	int token;
 	while(token=yylex()){
 		strcat(cur_line_content,yytext);
-		print_token(token);
-		//ECHO;
+		if(isTokenOn==1){
+			print_token(token);
+		}
 	}
 	return 0;
 }
@@ -183,11 +196,15 @@ void print_token(int token){
 	}
 
 
-
-
-
-
 }
 void print_error(){
-	printf("Error at line %d: %s\n",cur_line_num,yytext);
+	fprintf(stderr, "Error at line %d: %s\n",cur_line_num,yytext);
+}
+
+void newLine(){
+	if(isSourceOn == 1){
+		printf("%d:%s\n",cur_line_num,cur_line_content);
+	}
+	memset(cur_line_content,0,sizeof(cur_line_content));
+	cur_line_num++;
 }
