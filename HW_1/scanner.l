@@ -151,47 +151,47 @@ int yywrap(){
 void print_token(int token){
 	if(token>=10 && token<=13){
 		// type
-		printf("#key:%s\n",yytext);
+		fprintf(stdout,"#key:%s\n",yytext);
 		return;
 	}
 	if(token == TOKEN_ID){
 		// identifier
-		printf("#id:%s\n",yytext);
+		fprintf(stdout,"#id:%s\n",yytext);
 		return;
 	}
 	if(token>=30 && token<=49){
 		// operation
-		printf("#op:%s\n",yytext);
+		fprintf(stdout,"#op:%s\n",yytext);
 		return;
 	}
 	if(token>=60 && token<=69){
 		// punctuation
-		printf("#punc:%s\n",yytext);
+		fprintf(stdout,"#punc:%s\n",yytext);
 		return;
 	}
 	if(token == TOKEN_STRING){
 		// string
-		printf("#string:%s\n",yytext);
+		fprintf(stdout,"#string:%s\n",yytext);
 		return;
 	}
 	if(token == TOKEN_CHAR){
 		// char
-		printf("#char:%s\n",yytext);
+		fprintf(stdout,"#char:%s\n",yytext);
 		return;
 	}
 	if(token == TOKEN_INTEGER){
 		// integer
-		printf("#integer:%s\n",yytext);
+		fprintf(stdout,"#integer:%s\n",yytext);
 		return;
 	}
 	if(token == TOKEN_DOUBLE){
 		// double
-		printf("#double:%s\n",yytext);
+		fprintf(stdout,"#double:%s\n",yytext);
 		return;
 	}
 	if(token == TOKEN_SCI){
 		// sci
-		printf("#sci:%s\n",yytext);
+		fprintf(stdout,"#sci:%s\n",yytext);
 		return;
 	}
 
@@ -203,7 +203,7 @@ void print_error(){
 
 void newLine(){
 	if(isSourceOn == 1){
-		printf("%d:%s\n",cur_line_num,cur_line_content);
+		fprintf(stdout,"%d:%s\n",cur_line_num,cur_line_content);
 	}
 	memset(cur_line_content,0,sizeof(cur_line_content));
 	cur_line_num++;

@@ -1,7 +1,7 @@
 //This test case is only for homework explanation
 #pragma source off
 int main () {
-        double a = 6.a0;
+        double a = 6.0;
         int i;
         int b[2];
         for (i = 0; i < 2; i++) {
