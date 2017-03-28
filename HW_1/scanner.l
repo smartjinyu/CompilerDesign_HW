@@ -209,13 +209,13 @@ void print_token(int token){
 		return;
 	}
 	if(token>=80 && token<=96){
-		// type
+		// other keywords
 		fprintf(stdout,"#key:%s\n",yytext);
 		return;
 	}
 
 	if(token>=120 && token<=147){
-		// type
+		// sdtiofuncs
 		fprintf(stdout,"#key:%s\n",yytext);
 		return;
 	}
@@ -226,6 +226,7 @@ void print_token(int token){
 		fprintf(stdout,"#id:%s\n",yytext);
 		return;
 	}
+
 	if(token>=30 && token<=49){
 		// operation
 		fprintf(stdout,"#op:%s\n",yytext);
@@ -238,7 +239,11 @@ void print_token(int token){
 	}
 	if(token == TOKEN_STRING){
 		// string
-		fprintf(stdout,"#string:%s\n",yytext);
+		char text[256];
+		for(int i=1;yytext[i+1]!='\0';i++){
+			text[i-1]=yytext[i];
+		}
+		fprintf(stdout,"#string:%s\n",text);
 		return;
 	}
 	if(token == TOKEN_CHAR){
