@@ -7,6 +7,7 @@ int isTokenOn = 1;
 void print_token(int token);
 void print_error();
 void newLine();
+
 typedef enum{
 	TYPE_INT=10,TYPE_DOUBLE,TYPE_BOOL,TYPE_CHAR
 } TYPES;
@@ -25,10 +26,19 @@ typedef enum{
 
 typedef enum{
 	KEY_VOID=80,KEY_NULL,KEY_FOR,KEY_WHILE,KEY_DO,KEY_IF,
-	KEY_ELSE,KEY_WHICH,KEY_RETURN,KEY_BREAK,KEY_CONTINUE,
-	KEY_CONST,KEY_TRUE,KEY_FALSE,KEY_STRUCT,KEY_CAST,
+	KEY_ELSE,KEY_SWITCH,KEY_RETURN,KEY_BREAK,KEY_CONTINUE,
+	KEY_CONST,KEY_TRUE,KEY_FALSE,KEY_STRUCT,KEY_CASE,
 	KEY_DEFAULT
 } KEYWORDS;
+
+typedef enum{
+	STDIO_PRINTF=120,STDIO_SCANF,STDIO_GETC,STDIO_GETS,
+	STDIO_GETCHAR,STDIO_PUTS,STDIO_PUTCHAR,STDIO_CLEARERR,
+	STDIO_FOPEN,STDIO_FCLOSE,STDIO_GETW,STDIO_PUTW,
+	STDIO_PUTC,STDIO_FPUTC,STDIO_FGETS,STDIO_FPUTS,STDIO_FEOF,
+	STDIO_FGETC,STDIO_FPRINTF,STDIO_FSCANF,STDIO_FSEEK,STDIO_FTELL,
+	STDIO_REWIND,STDIO_SPRINTF,STDIO_SSCANF,STDIO_REMOVE,STDIO_FFLUSH
+} STDIOFUNC;
 
 typedef enum{
 	TOKEN_ID = 300,TOKEN_STRING, TOKEN_CHAR, TOKEN_INTEGER, 
@@ -98,6 +108,50 @@ TOKENON			("#pragma token on")
 "bool"				{ BEGIN(VAR_DEF);return TYPE_BOOL; }
 "char"				{ BEGIN(VAR_DEF);return TYPE_CHAR; }
 
+"void"				{ return KEY_VOID; }
+"null"				{ return KEY_NULL; }
+"for"				{ return KEY_FOR; }
+"while"				{ return KEY_WHILE; }
+"do"				{ return KEY_DO; }
+"if"				{ return KEY_IF; }
+"else"				{ return KEY_ELSE; }
+"switch"			{ return KEY_SWITCH; }
+"return"			{ return KEY_RETURN; }
+"break"				{ return KEY_BREAK; }
+"continue"			{ return KEY_CONTINUE; }
+"const"				{ return KEY_CONST; }
+"true"				{ return KEY_TRUE; }
+"false"				{ return KEY_FALSE; }
+"struct"			{ return KEY_STRUCT; }
+"case"				{ return KEY_CASE; }
+"default"			{ return KEY_DEFAULT; }
+
+"printf"			{ return STDIO_PRINTF; }
+"scanf"				{ return STDIO_SCANF; }
+"getc"				{ return STDIO_GETC; }
+"gets"				{ return STDIO_GETS; }
+"getchar"			{ return STDIO_GETCHAR; }
+"puts"				{ return STDIO_PUTS; }
+"putchar"			{ return STDIO_PUTCHAR; }
+"clearerr"			{ return STDIO_CLEARERR; }
+"fopen"				{ return STDIO_FOPEN; }
+"fclose"			{ return STDIO_FCLOSE; }
+"getw"				{ return STDIO_GETW; }
+"putw"				{ return STDIO_PUTW; }
+"fgetc"				{ return STDIO_FGETC; }
+"putc"				{ return STDIO_PUTC; }
+"fputc"				{ return STDIO_FPUTC; }
+"fgets"				{ return STDIO_FGETS; }
+"fputs"				{ return STDIO_FPUTS; }
+"feof"				{ return STDIO_FEOF; }
+"fseek"				{ return STDIO_FSEEK; }
+"ftell"				{ return STDIO_FTELL; }
+"rewind"			{ return STDIO_REWIND; }
+"sprintf"			{ return STDIO_SPRINTF; }
+"sscanf"			{ return STDIO_SSCANF; }
+"remove"			{ return STDIO_REMOVE; }
+"fflush"			{ return STDIO_FFLUSH; }
+
 "+"					{ return OP_PLUS; }
 "-"					{ return OP_MINUS; }
 "*"					{ return OP_MULTIPLE;  /*TODO*/}
@@ -154,6 +208,19 @@ void print_token(int token){
 		fprintf(stdout,"#key:%s\n",yytext);
 		return;
 	}
+	if(token>=80 && token<=96){
+		// type
+		fprintf(stdout,"#key:%s\n",yytext);
+		return;
+	}
+
+	if(token>=120 && token<=147){
+		// type
+		fprintf(stdout,"#key:%s\n",yytext);
+		return;
+	}
+
+
 	if(token == TOKEN_ID){
 		// identifier
 		fprintf(stdout,"#id:%s\n",yytext);
