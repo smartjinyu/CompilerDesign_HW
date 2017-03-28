@@ -1,0 +1,16 @@
+1://This test case is only for homework explanation
+2:#pragma token off
+3:int main () {
+4:        double a = 6.0;
+5:        int i;
+6:        int b[2];
+7:        for (i = 0; i < 2; i++) {
+8:                b[i] = i;
+9:        }
+10:        printf("b[1]=%d\n", b[1]);
+11:        if (b[0] > 1){ 
+12:                a = a * 1.23e-1; 
+13:        }  
+14:        return 0;
+15:
+16:} 

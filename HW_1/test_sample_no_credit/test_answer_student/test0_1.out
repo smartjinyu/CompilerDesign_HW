@@ -1,0 +1,87 @@
+1://This test case is only for homework explanation
+#key:int
+#id:main
+#punc:(
+#punc:)
+#punc:{
+2:int main () {
+#key:double
+#id:a
+#op:=
+#double:6.0
+#punc:;
+3:        double a = 6.0;
+#key:int
+#id:i
+#punc:;
+4:        int i;
+#key:int
+#id:b
+#punc:[
+#integer:2
+#punc:]
+#punc:;
+5:        int b[2];
+#key:for
+#punc:(
+#id:i
+#op:=
+#integer:0
+#punc:;
+#id:i
+#op:<
+#integer:2
+#punc:;
+#id:i
+#op:++
+#punc:)
+#punc:{
+6:        for (i = 0; i < 2; i++) {
+#id:b
+#punc:[
+#id:i
+#punc:]
+#op:=
+#id:i
+#punc:;
+7:                b[i] = i;
+#punc:}
+8:        }
+#key:printf
+#punc:(
+#string:b[1]=%d\n
+#punc:,
+#id:b
+#punc:[
+#integer:1
+#punc:]
+#punc:)
+#punc:;
+9:        printf("b[1]=%d\n", b[1]);
+#key:if
+#punc:(
+#id:b
+#punc:[
+#integer:0
+#punc:]
+#op:>
+#integer:1
+#punc:)
+#punc:{
+10:        if (b[0] > 1){ 
+#id:a
+#op:=
+#id:a
+#op:*
+#sci:1.23e-1
+#punc:;
+11:                a = a * 1.23e-1; 
+#punc:}
+12:        }  
+#key:return
+#integer:0
+#punc:;
+13:        return 0;
+14:
+#punc:}
+15:} 

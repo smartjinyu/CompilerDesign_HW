@@ -1,0 +1,58 @@
+Version 4:
+Change file name in test_sample_no_credit/test_answer_student
+	test0Error.out in the original is now called test0_1_error.out
+	The content in the file remain the same. 
+	For error code, after executing ./your_scnner < *.c 2> *.out
+	, only error code in your .out file will be tested. 	
+
+----------------------------------------------------------------------------------------
+
+Version 3:
+Revise hw1 spec: CS340400_2017_hw1_revise_4
+	page 5      You don’t need to implement error handling for comments.
+		    For Variable declaration, you just need to consider illegal variable
+		    names.
+		    Add more details about error handling for pragmas.
+
+----------------------------------------------------------------------------------------
+
+Version 2:
+Revise hw1 spec: CS340400_2017_hw1_revise_4
+	page 4      “=!” should be “!=”
+	page 7	    All error messages must be printed to stderr and follow the format
+		    described below.
+		    fprintf(stderr, "Error at line %d: %s\n", linenum, yytext); exit(1); 
+		
+		    Since yytext is (char *) type, we use %s to print the result.
+	page 15, 16 Misspelling pragma. 
+
+Add new error handling lex template
+	file error_handling_example
+		error_handling.l:    lex template
+		error_testcase.c:    illegal integer constants
+		error_testcase.out:  The output you should get after executing 
+				     ./your_scnner < error_testcase.c
+Add new pragma source off test case
+	file test_sample_no_credit
+		pragma_source_off_1.c
+		test_answer_student/pragma_source_off_1.out
+
+Change file name in test_sample_no_credit/test_answer_student
+	test0Error.out is now called test0_1_error.out
+	The content in the file remain the same.
+
+----------------------------------------------------------------------------------------
+
+How to check the output format?
+
+For test cases without errors,
+$ cd test_sample_no_credit
+$ ./your_scnner < test0_1.c > your_output.out
+$ vimdiff your_output.out test_answer_student/test0_1.out
+
+For test cases with errors,
+$ cd test_sample_no_credit
+$ ./your_scnner < test0_1_error.c 2> your_output.out
+$ vimdiff your_output.out test_answer_student/test0_1_error.out
+
+Feel free to ask questions. :)

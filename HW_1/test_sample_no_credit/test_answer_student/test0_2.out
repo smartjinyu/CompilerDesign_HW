@@ -1,0 +1,6 @@
+#key:char
+#id:a
+#op:=
+#char:'i'
+#punc:;
+1:char a = 'i';
