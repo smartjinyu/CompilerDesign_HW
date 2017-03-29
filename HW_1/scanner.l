@@ -46,14 +46,15 @@ typedef enum{
 } TokenType;
 
 typedef enum{
-	OTHER_SPACE=500,OTHER_COMMENT,OTHRE_SOURCEON,OTHER_SOURCEOFF,
-	OTHER_TOKENON,OTHER_TOKENOFF
+	OTHER_SPACE=500,OTHER_COMMENT,OTHER_MULTICOMMENT,OTHRE_SOURCEON,
+	OTHER_SOURCEOFF,OTHER_TOKENON,OTHER_TOKENOFF
 } Others;
 %}
 
 
 /* Definitions */
 %s VAR_DEF
+%s comment
 UNTERM_STRING	(\042[^\042\n]*)
 STRING 			(\042[^\042\n]*\042)
 CHARACTER		(\047[^\047\n]\047)
@@ -69,7 +70,6 @@ SCI_NOTATION	([0-9]+["."[0-9]*]?[eE][+-]?[0-9]+)
 SCI_INVALID		([0-9]+["."[0-9]*]?[eE][+-]?[0-9]+"."[0-9]*)
 
 SINGLE_COMMENT	("//"[^\n]*)
-MUTTI_COMMENTS	("/*"[^"*/"]* "*/")
 
 IDENTIFIER		([_a-zA-Z][_a-zA-Z0-9]*)
 
@@ -80,7 +80,13 @@ TOKENON			("#pragma token on")
 
 
 %%
-{SINGLE_COMMENT}	{ return OTHER_COMMENT;}
+{SINGLE_COMMENT}	{ return OTHER_COMMENT; }
+"/*"				{ BEGIN(comment);return OTHER_MULTICOMMENT; }
+<comment>[^*\n]*    { return OTHER_MULTICOMMENT; }
+<comment>"*"+[^*/\n]* { return OTHER_MULTICOMMENT; }
+<comment>\n 		{ newLine(); }
+<comment>"*"+"/"	{ BEGIN(INITIAL);return OTHER_MULTICOMMENT;}
+
 {SOURCEON}			{ isSourceOn = 1;return OTHRE_SOURCEON; }
 {SOURCEOFF}			{ isSourceOn = 0;return OTHER_SOURCEOFF; }
 {TOKENON}			{ isTokenOn = 1;return OTHER_TOKENON; }
