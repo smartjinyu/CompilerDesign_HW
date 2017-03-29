@@ -46,7 +46,8 @@ typedef enum{
 } TokenType;
 
 typedef enum{
-	OTHER_SPACE=500,OTHER_COMMENT
+	OTHER_SPACE=500,OTHER_COMMENT,OTHRE_SOURCEON,OTHER_SOURCEOFF,
+	OTHER_TOKENON,OTHER_TOKENOFF
 } Others;
 %}
 
@@ -80,10 +81,10 @@ TOKENON			("#pragma token on")
 
 %%
 {SINGLE_COMMENT}	{ return OTHER_COMMENT;}
-{SOURCEON}			{ isSourceOn = 1;}
-{SOURCEOFF}			{ isSourceOn = 0;}
-{TOKENON}			{ isTokenOn = 1;}
-{TOKENOFF}			{ isTokenOn = 0;}
+{SOURCEON}			{ isSourceOn = 1;return OTHRE_SOURCEON; }
+{SOURCEOFF}			{ isSourceOn = 0;return OTHER_SOURCEOFF; }
+{TOKENON}			{ isTokenOn = 1;return OTHER_TOKENON; }
+{TOKENOFF}			{ isTokenOn = 0;return OTHER_TOKENOFF; }
 
 {STRING}			{ return TOKEN_STRING; }
 {UNTERM_STRING}		{ print_error();return 0; }
@@ -240,9 +241,11 @@ void print_token(int token){
 	if(token == TOKEN_STRING){
 		// string
 		char text[256];
-		for(int i=1;yytext[i+1]!='\0';i++){
+		int i;
+		for(i=1;yytext[i]!='\042';i++){
 			text[i-1]=yytext[i];
 		}
+		text[i-1]='\0';
 		fprintf(stdout,"#string:%s\n",text);
 		return;
 	}
@@ -271,6 +274,7 @@ void print_token(int token){
 }
 void print_error(){
 	fprintf(stderr, "Error at line %d: %s\n",cur_line_num,yytext);
+	exit(1);
 }
 
 void newLine(){

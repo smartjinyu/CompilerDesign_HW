@@ -41,7 +41,7 @@
 #punc:}
 #key:printf
 #punc:(
-#string:b[1]=%d\ndso_get
+#string:b[1]=%d\n
 #punc:,
 #id:b
 #punc:[
