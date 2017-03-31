@@ -1,3 +1,7 @@
+These are test cases given by TAs, test_answer_student is the sample output. Just run ./test.sh to get my scanner's answer, and it will compare with sample output automatically.
+Follwing instructions are given by TAs.
+
+----------------------------------------------------------------------------------------
 Version 4:
 Change file name in test_sample_no_credit/test_answer_student
 	test0Error.out in the original is now called test0_1_error.out

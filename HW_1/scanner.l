@@ -53,8 +53,8 @@ typedef enum{
 
 
 /* Definitions */
-%s VAR_DEF
-%s comment
+%x VARDEF
+%s COMMENT
 UNTERM_STRING	(\042[^\042\n]*)
 STRING 			(\042[^\042\n]*\042)
 CHARACTER		(\047[^\047\n]\047)
@@ -68,6 +68,7 @@ DOUBLE_ZERO		(0.[0-9]+)
 DOUBLE_INVALID	([0-9]+".")
 SCI_NOTATION	([0-9]+["."[0-9]*]?[eE][+-]?[0-9]+)
 SCI_INVALID		([0-9]+["."[0-9]*]?[eE][+-]?[0-9]+"."[0-9]*)
+KEY_WORDS		("double"|"int"|"char"|"bool"|"void"|"null"|"for"|"while"|"do"|"if"|"else"|"switch"|"return"|"break"|"continue"|"const"|"true"|"false"|"struct"|"case"|"default"|"printf"|"scanf"|"getc"|"gets"|"getchar"|"puts"|"putchar"|"clearerr"|"fopen"|"fclose"|"getw"|"putw"|"fgetc"|"putc"|"fputc"|"fgets"|"fputs"|"feof"|"fseek"|"ftell"|"rewind"|"sprintf"|"sscanf"|"remove"|"fflush")
 
 SINGLE_COMMENT	("//"[^\n]*)
 
@@ -81,11 +82,11 @@ TOKENON			("#pragma token on")
 
 %%
 {SINGLE_COMMENT}	{ return OTHER_COMMENT; }
-"/*"				{ BEGIN(comment);return OTHER_MULTICOMMENT; }
-<comment>[^*\n]*    { return OTHER_MULTICOMMENT; }
-<comment>"*"+[^*/\n]* { return OTHER_MULTICOMMENT; }
-<comment>\n 		{ newLine(); }
-<comment>"*"+"/"	{ BEGIN(INITIAL);return OTHER_MULTICOMMENT;}
+"/*"				{ BEGIN(COMMENT);return OTHER_MULTICOMMENT; }
+<COMMENT>[^*\n]*    { return OTHER_MULTICOMMENT; }
+<COMMENT>"*"+[^*/\n]* { return OTHER_MULTICOMMENT; }
+<COMMENT>\n 		{ newLine(); }
+<COMMENT>"*"+"/"	{ BEGIN(INITIAL);return OTHER_MULTICOMMENT;}
 
 {SOURCEON}			{ isSourceOn = 1;return OTHRE_SOURCEON; }
 {SOURCEOFF}			{ isSourceOn = 0;return OTHER_SOURCEOFF; }
@@ -110,10 +111,21 @@ TOKENON			("#pragma token on")
 [\n]				{ newLine();}
 [ \t\r]+          	{ return OTHER_SPACE;/* ignore all spaces */ }
 
-"int"				{ BEGIN(VAR_DEF);return TYPE_INT; }
-"double"			{ BEGIN(VAR_DEF);return TYPE_DOUBLE; }
-"bool"				{ BEGIN(VAR_DEF);return TYPE_BOOL; }
-"char"				{ BEGIN(VAR_DEF);return TYPE_CHAR; }
+"int"				{ BEGIN(VARDEF);return TYPE_INT; }
+"double"			{ BEGIN(VARDEF);return TYPE_DOUBLE; }
+"bool"				{ BEGIN(VARDEF);return TYPE_BOOL; }
+"char"				{ BEGIN(VARDEF);return TYPE_CHAR; }
+<VARDEF>"="			{ BEGIN(INITIAL);return OP_EQUAL; }
+<VARDEF>";"			{ BEGIN(INITIAL);return PUNC_SEMICOLON; }
+<VARDEF>[ \t\r]+   	{ return OTHER_SPACE;}
+<VARDEF>"*"			{ return OP_MULTIPLE;}
+<VARDEF>{KEY_WORDS}	{ print_error();return 0; }
+<VARDEF>{IDENTIFIER} { BEGIN(INITIAL);return TOKEN_ID; }
+<VARDEF>.			{ print_error();return 0; }
+
+
+
+
 
 "void"				{ return KEY_VOID; }
 "null"				{ return KEY_NULL; }
