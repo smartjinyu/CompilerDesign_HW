@@ -1,5 +1,7 @@
 %{
 #include <string.h>
+//#include "y.tab.h"
+
 int cur_line_num = 1;
 char cur_line_content[256];
 int isSourceOn = 1;
@@ -81,127 +83,127 @@ TOKENON			("#pragma token on")
 
 
 %%
-{SINGLE_COMMENT}	{ return OTHER_COMMENT; }
-"/*"				{ BEGIN(COMMENT);return OTHER_MULTICOMMENT; }
-<COMMENT>[^*\n]*    { return OTHER_MULTICOMMENT; }
-<COMMENT>"*"+[^*/\n]* { return OTHER_MULTICOMMENT; }
+{SINGLE_COMMENT}	{ strcat(cur_line_content,yytext); return OTHER_COMMENT; }
+"/*"				{ BEGIN(COMMENT); strcat(cur_line_content,yytext); return OTHER_MULTICOMMENT; }
+<COMMENT>[^*\n]*    { strcat(cur_line_content,yytext); return OTHER_MULTICOMMENT; }
+<COMMENT>"*"+[^*/\n]* { strcat(cur_line_content,yytext); return OTHER_MULTICOMMENT; }
 <COMMENT>\n 		{ newLine(); }
-<COMMENT>"*"+"/"	{ BEGIN(INITIAL);return OTHER_MULTICOMMENT;}
+<COMMENT>"*"+"/"	{ BEGIN(INITIAL); strcat(cur_line_content,yytext); return OTHER_MULTICOMMENT;}
 
-{SOURCEON}			{ isSourceOn = 1;return OTHRE_SOURCEON; }
-{SOURCEOFF}			{ isSourceOn = 0;return OTHER_SOURCEOFF; }
-{TOKENON}			{ isTokenOn = 1;return OTHER_TOKENON; }
-{TOKENOFF}			{ isTokenOn = 0;return OTHER_TOKENOFF; }
+{SOURCEON}			{ isSourceOn = 1; strcat(cur_line_content,yytext); return OTHRE_SOURCEON; }
+{SOURCEOFF}			{ isSourceOn = 0; strcat(cur_line_content,yytext); return OTHER_SOURCEOFF; }
+{TOKENON}			{ isTokenOn = 1; strcat(cur_line_content,yytext); return OTHER_TOKENON; }
+{TOKENOFF}			{ isTokenOn = 0; strcat(cur_line_content,yytext); return OTHER_TOKENOFF; }
 
-{STRING}			{ return TOKEN_STRING; }
+{STRING}			{ strcat(cur_line_content,yytext); print_token(4); return TOKEN_STRING; }
 {UNTERM_STRING}		{ print_error();return 0; }
-{CHARACTER}			{ return TOKEN_CHAR; }
+{CHARACTER}			{ strcat(cur_line_content,yytext); print_token(5); return TOKEN_CHAR; }
 {MULTI_CHAR}		{ print_error();return 0; }
 {UNTERM_CHAR}		{ print_error();return 0; }
-{INTEGER}			{ return TOKEN_INTEGER;}
-{INTEGER_ZERO}		{ return TOKEN_INTEGER;}
+{INTEGER}			{ strcat(cur_line_content,yytext); print_token(6); return TOKEN_INTEGER;}
+{INTEGER_ZERO}		{ strcat(cur_line_content,yytext); print_token(6); return TOKEN_INTEGER;}
 {INTEGER_INVALID}	{ print_error();return 0; }
 
-{DOUBLE}			{ return TOKEN_DOUBLE; }
-{DOUBLE_ZERO}		{ return TOKEN_DOUBLE; }
+{DOUBLE}			{ strcat(cur_line_content,yytext); print_token(7); return TOKEN_DOUBLE; }
+{DOUBLE_ZERO}		{ strcat(cur_line_content,yytext); print_token(7); return TOKEN_DOUBLE; }
 {DOUBLE_INVALID}	{ print_error();return 0; }
-{SCI_NOTATION}		{ return TOKEN_SCI;}
+{SCI_NOTATION}		{ strcat(cur_line_content,yytext); print_token(8); return TOKEN_SCI;}
 {SCI_INVALID}		{ print_error();return 0; }
 
 [\n]				{ newLine();}
-[ \t\r]+          	{ return OTHER_SPACE;/* ignore all spaces */ }
+[ \t\r]+          	{ strcat(cur_line_content,yytext); return OTHER_SPACE;/* ignore all spaces */ }
 
-"int"				{ BEGIN(VARDEF);return TYPE_INT; }
-"double"			{ BEGIN(VARDEF);return TYPE_DOUBLE; }
-"bool"				{ BEGIN(VARDEF);return TYPE_BOOL; }
-"char"				{ BEGIN(VARDEF);return TYPE_CHAR; }
-<VARDEF>"="			{ BEGIN(INITIAL);return OP_EQUAL; }
-<VARDEF>";"			{ BEGIN(INITIAL);return PUNC_SEMICOLON; }
-<VARDEF>[ \t\r]+   	{ return OTHER_SPACE;}
-<VARDEF>"*"			{ return OP_MULTIPLE;}
+"int"				{ BEGIN(VARDEF); strcat(cur_line_content,yytext); print_token(0); return TYPE_INT; }
+"double"			{ BEGIN(VARDEF); strcat(cur_line_content,yytext); print_token(0); return TYPE_DOUBLE; }
+"bool"				{ BEGIN(VARDEF); strcat(cur_line_content,yytext); print_token(0); return TYPE_BOOL; }
+"char"				{ BEGIN(VARDEF); strcat(cur_line_content,yytext); print_token(0); return TYPE_CHAR; }
+<VARDEF>"="			{ BEGIN(INITIAL); strcat(cur_line_content,yytext); print_token(2); return OP_EQUAL; }
+<VARDEF>";"			{ BEGIN(INITIAL); strcat(cur_line_content,yytext); print_token(3); return PUNC_SEMICOLON; }
+<VARDEF>[ \t\r]+   	{ strcat(cur_line_content,yytext); return OTHER_SPACE;}
+<VARDEF>"*"			{ strcat(cur_line_content,yytext); print_token(2); return OP_MULTIPLE;}
 <VARDEF>{KEY_WORDS}	{ print_error();return 0; }
-<VARDEF>{IDENTIFIER} { BEGIN(INITIAL);return TOKEN_ID; }
+<VARDEF>{IDENTIFIER} { BEGIN(INITIAL);strcat(cur_line_content,yytext); print_token(1); return TOKEN_ID; }
 <VARDEF>.			{ print_error();return 0; }
 
 
 
 
 
-"void"				{ return KEY_VOID; }
-"null"				{ return KEY_NULL; }
-"for"				{ return KEY_FOR; }
-"while"				{ return KEY_WHILE; }
-"do"				{ return KEY_DO; }
-"if"				{ return KEY_IF; }
-"else"				{ return KEY_ELSE; }
-"switch"			{ return KEY_SWITCH; }
-"return"			{ return KEY_RETURN; }
-"break"				{ return KEY_BREAK; }
-"continue"			{ return KEY_CONTINUE; }
-"const"				{ return KEY_CONST; }
-"true"				{ return KEY_TRUE; }
-"false"				{ return KEY_FALSE; }
-"struct"			{ return KEY_STRUCT; }
-"case"				{ return KEY_CASE; }
-"default"			{ return KEY_DEFAULT; }
+"void"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_VOID; }
+"null"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_NULL; }
+"for"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_FOR; }
+"while"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_WHILE; }
+"do"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_DO; }
+"if"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_IF; }
+"else"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_ELSE; }
+"switch"			{ strcat(cur_line_content,yytext); print_token(0); return KEY_SWITCH; }
+"return"			{ strcat(cur_line_content,yytext); print_token(0); return KEY_RETURN; }
+"break"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_BREAK; }
+"continue"			{ strcat(cur_line_content,yytext); print_token(0); return KEY_CONTINUE; }
+"const"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_CONST; }
+"true"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_TRUE; }
+"false"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_FALSE; }
+"struct"			{ strcat(cur_line_content,yytext); print_token(0); return KEY_STRUCT; }
+"case"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_CASE; }
+"default"			{ strcat(cur_line_content,yytext); print_token(0); return KEY_DEFAULT; }
 
-"printf"			{ return STDIO_PRINTF; }
-"scanf"				{ return STDIO_SCANF; }
-"getc"				{ return STDIO_GETC; }
-"gets"				{ return STDIO_GETS; }
-"getchar"			{ return STDIO_GETCHAR; }
-"puts"				{ return STDIO_PUTS; }
-"putchar"			{ return STDIO_PUTCHAR; }
-"clearerr"			{ return STDIO_CLEARERR; }
-"fopen"				{ return STDIO_FOPEN; }
-"fclose"			{ return STDIO_FCLOSE; }
-"getw"				{ return STDIO_GETW; }
-"putw"				{ return STDIO_PUTW; }
-"fgetc"				{ return STDIO_FGETC; }
-"putc"				{ return STDIO_PUTC; }
-"fputc"				{ return STDIO_FPUTC; }
-"fgets"				{ return STDIO_FGETS; }
-"fputs"				{ return STDIO_FPUTS; }
-"feof"				{ return STDIO_FEOF; }
-"fseek"				{ return STDIO_FSEEK; }
-"ftell"				{ return STDIO_FTELL; }
-"rewind"			{ return STDIO_REWIND; }
-"sprintf"			{ return STDIO_SPRINTF; }
-"sscanf"			{ return STDIO_SSCANF; }
-"remove"			{ return STDIO_REMOVE; }
-"fflush"			{ return STDIO_FFLUSH; }
+"printf"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PRINTF; }
+"scanf"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_SCANF; }
+"getc"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_GETC; }
+"gets"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_GETS; }
+"getchar"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_GETCHAR; }
+"puts"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PUTS; }
+"putchar"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PUTCHAR; }
+"clearerr"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_CLEARERR; }
+"fopen"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FOPEN; }
+"fclose"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FCLOSE; }
+"getw"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_GETW; }
+"putw"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PUTW; }
+"fgetc"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FGETC; }
+"putc"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PUTC; }
+"fputc"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FPUTC; }
+"fgets"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FGETS; }
+"fputs"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FPUTS; }
+"feof"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FEOF; }
+"fseek"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FSEEK; }
+"ftell"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FTELL; }
+"rewind"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_REWIND; }
+"sprintf"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_SPRINTF; }
+"sscanf"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_SSCANF; }
+"remove"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_REMOVE; }
+"fflush"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FFLUSH; }
 
-"+"					{ return OP_PLUS; }
-"-"					{ return OP_MINUS; }
-"*"					{ return OP_MULTIPLE;  /*TODO*/}
-"/"					{ return OP_DIVIDE; }
-"%"					{ return OP_PERCENT; }
-"++"				{ return OP_2PLUS; }
-"--"				{ return OP_2MINUS; }
-"<"					{ return OP_LESS; }
-"<="				{ return OP_LE; }
-">"					{ return OP_GREATER; }
-">="				{ return OP_GE; }
-"=="				{ return OP_2EQUAL; }
-"!="				{ return OP_NE; }
-"="					{ return OP_EQUAL; }
-"&&"				{ return OP_AND; }
-"||"				{ return OP_OR; }
-"!"					{ return OP_NOT; }
-"&"					{ return OP_ADDR; }
+"+"					{ strcat(cur_line_content,yytext); print_token(2); return OP_PLUS; }
+"-"					{ strcat(cur_line_content,yytext); print_token(2); return OP_MINUS; }
+"*"					{ strcat(cur_line_content,yytext); print_token(2); return OP_MULTIPLE; }
+"/"					{ strcat(cur_line_content,yytext); print_token(2); return OP_DIVIDE; }
+"%"					{ strcat(cur_line_content,yytext); print_token(2); return OP_PERCENT; }
+"++"				{ strcat(cur_line_content,yytext); print_token(2); return OP_2PLUS; }
+"--"				{ strcat(cur_line_content,yytext); print_token(2); return OP_2MINUS; }
+"<"					{ strcat(cur_line_content,yytext); print_token(2); return OP_LESS; }
+"<="				{ strcat(cur_line_content,yytext); print_token(2); return OP_LE; }
+">"					{ strcat(cur_line_content,yytext); print_token(2); return OP_GREATER; }
+">="				{ strcat(cur_line_content,yytext); print_token(2); return OP_GE; }
+"=="				{ strcat(cur_line_content,yytext); print_token(2); return OP_2EQUAL; }
+"!="				{ strcat(cur_line_content,yytext); print_token(2); return OP_NE; }
+"="					{ strcat(cur_line_content,yytext); print_token(2); return OP_EQUAL; }
+"&&"				{ strcat(cur_line_content,yytext); print_token(2); return OP_AND; }
+"||"				{ strcat(cur_line_content,yytext); print_token(2); return OP_OR; }
+"!"					{ strcat(cur_line_content,yytext); print_token(2); return OP_NOT; }
+"&"					{ strcat(cur_line_content,yytext); print_token(2); return OP_ADDR; }
 
-":"					{ return PUNC_COLON; }
-";"					{ return PUNC_SEMICOLON; }
-","					{ return PUNC_COMMA; }
-"."					{ return PUNC_DOT; }
-"["					{ return PUNC_LBRACKET; }
-"]"					{ return PUNC_RBRACKET; }
-"("					{ return PUNC_LPERAN; }
-")"					{ return PUNC_RPERAN; }
-"{"					{ return PUNC_LBRACE; }
-"}"					{ return PUNC_RBRACE; }
+":"					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_COLON; }
+";"					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_SEMICOLON; }
+","					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_COMMA; }
+"."					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_DOT; }
+"["					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_LBRACKET; }
+"]"					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_RBRACKET; }
+"("					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_LPERAN; }
+")"					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_RPERAN; }
+"{"					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_LBRACE; }
+"}"					{ strcat(cur_line_content,yytext); print_token(3); return PUNC_RBRACE; }
 
-{IDENTIFIER}		{ return TOKEN_ID; }
+{IDENTIFIER}		{ strcat(cur_line_content,yytext); print_token(1); return TOKEN_ID; }
 .					{ print_error(); return 0; }
 
 %%
@@ -209,10 +211,7 @@ TOKENON			("#pragma token on")
 int main(){
 	int token;
 	while(token=yylex()){
-		strcat(cur_line_content,yytext);
-		if(isTokenOn==1){
-			print_token(token);
-		}
+		
 	}
 	return 0;
 }
@@ -220,76 +219,155 @@ int main(){
 int yywrap(){
 	return 1;
 }
-
-void print_token(int token){
-	if(token>=10 && token<=13){
-		// type
-		fprintf(stdout,"#key:%s\n",yytext);
-		return;
-	}
-	if(token>=80 && token<=96){
-		// other keywords
-		fprintf(stdout,"#key:%s\n",yytext);
-		return;
-	}
-
-	if(token>=120 && token<=147){
-		// sdtiofuncs
-		fprintf(stdout,"#key:%s\n",yytext);
-		return;
-	}
-
-
-	if(token == TOKEN_ID){
-		// identifier
-		fprintf(stdout,"#id:%s\n",yytext);
-		return;
-	}
-
-	if(token>=30 && token<=49){
-		// operation
-		fprintf(stdout,"#op:%s\n",yytext);
-		return;
-	}
-	if(token>=60 && token<=69){
-		// punctuation
-		fprintf(stdout,"#punc:%s\n",yytext);
-		return;
-	}
-	if(token == TOKEN_STRING){
-		// string
-		char text[256];
-		int i;
-		for(i=1;yytext[i]!='\042';i++){
-			text[i-1]=yytext[i];
+/*
+* tokenType
+* 0:key, 1:identifier, 2:operation, 3:punctuation, 4:string constant, 5:char constant, 6:integer constant, 7:double constant, 8:sci constant
+*/
+void print_token(int tokenType){
+	if(isTokenOn == 1){
+		/*
+		if(token>=10 && token<=13){
+			// type
+			fprintf(stdout,"#key:%s\n",yytext);
+			return;
 		}
-		text[i-1]='\0';
-		fprintf(stdout,"#string:%s\n",text);
-		return;
-	}
-	if(token == TOKEN_CHAR){
-		// char
-		fprintf(stdout,"#char:%s\n",yytext);
-		return;
-	}
-	if(token == TOKEN_INTEGER){
-		// integer
-		fprintf(stdout,"#integer:%s\n",yytext);
-		return;
-	}
-	if(token == TOKEN_DOUBLE){
-		// double
-		fprintf(stdout,"#double:%s\n",yytext);
-		return;
-	}
-	if(token == TOKEN_SCI){
-		// sci
-		fprintf(stdout,"#sci:%s\n",yytext);
-		return;
-	}
+		if(token>=80 && token<=96){
+			// other keywords
+			fprintf(stdout,"#key:%s\n",yytext);
+			return;
+		}
 
+		if(token>=120 && token<=147){
+			// sdtiofuncs
+			fprintf(stdout,"#key:%s\n",yytext);
+			return;
+		}*/
+		if(tokenType == 0){
+			// key
+			fprintf(stdout,"#key:%s\n",yytext);
+			return;
+		}
+
+		/*
+		if(token == TOKEN_ID){
+			// identifier
+			fprintf(stdout,"#id:%s\n",yytext);
+			return;
+		}
+		*/
+		if(tokenType == 1){
+			// identifier
+			fprintf(stdout,"#id:%s\n",yytext);
+			return;
+		}
+
+		if(tokenType == 2){
+			// operation
+			fprintf(stdout,"#op:%s\n",yytext);
+			return;
+		}
+
+		if(tokenType == 3){
+			// punctuation
+			fprintf(stdout,"#punc:%s\n",yytext);
+			return;
+		}
+
+		/*
+
+		if(token>=30 && token<=49){
+			// operation
+			fprintf(stdout,"#op:%s\n",yytext);
+			return;
+		}
+		if(token>=60 && token<=69){
+			// punctuation
+			fprintf(stdout,"#punc:%s\n",yytext);
+			return;
+		}
+		*/
+
+		if(tokenType == 4){
+			// string constant
+			char text[256];
+			int i;
+			for(i=1;yytext[i]!='\042';i++){
+				text[i-1]=yytext[i];
+			}
+			text[i-1]='\0';
+			fprintf(stdout,"#string:%s\n",text);
+			return;
+
+		}
+
+		/*
+		if(token == TOKEN_STRING){
+			// string
+			char text[256];
+			int i;
+			for(i=1;yytext[i]!='\042';i++){
+				text[i-1]=yytext[i];
+			}
+			text[i-1]='\0';
+			fprintf(stdout,"#string:%s\n",text);
+			return;
+		}
+		*/
+
+		if(tokenType == 5){
+			// char constant
+			fprintf(stdout,"#char:%s\n",yytext);
+			return;
+		}
+		/*
+		if(token == TOKEN_CHAR){
+			// char
+			fprintf(stdout,"#char:%s\n",yytext);
+			return;
+		}
+		*/
+
+		if(tokenType == 6){
+			// integer constant
+			fprintf(stdout,"#integer:%s\n",yytext);
+			return;
+		}
+		/*
+		if(token == TOKEN_INTEGER){
+			// integer
+			fprintf(stdout,"#integer:%s\n",yytext);
+			return;
+		}
+		*/
+		if(tokenType == 7){
+			// double constant
+			fprintf(stdout,"#double:%s\n",yytext);
+			return;
+		}
+		/*
+		if(token == TOKEN_DOUBLE){
+			// double
+			fprintf(stdout,"#double:%s\n",yytext);
+			return;
+		}
+		*/
+
+		if(tokenType == 8){
+			// sci constant
+			fprintf(stdout,"#sci:%s\n",yytext);
+			return;
+		}
+		/*
+		if(token == TOKEN_SCI){
+			// sci
+			fprintf(stdout,"#sci:%s\n",yytext);
+			return;
+		}*/
+
+	}
 
 }
+
 void print_error(){
 	fprintf(stderr, "Error at line %d: %s\n",cur_line_num,yytext);
 	exit(1);
