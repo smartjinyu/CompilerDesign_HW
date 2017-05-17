@@ -1,6 +1,9 @@
 %{
 #include <stdio.h>
-void yyerror(const char* msg) {}
+int cur_line_num = 1;
+char cur_line_content[256];
+
+int yyerror(const char* msg) {}
 %}
 
 %token TYPE_INT TYPE_DOUBLE TYPE_BOOL TYPE_CHAR
@@ -22,6 +25,11 @@ starting_unit
 external_declaration
 		: function_definition
 		| declaration
+		;
+
+declaration_list
+		: declaration
+		| declaration_list declaration
 		;
 
 declaration
@@ -57,6 +65,11 @@ init_declarator
 		| declarator
 		;
 
+function_definition
+		: declaration_specifiers declarator declaration_list compound_statement
+		| declaration_specifiers declarator compound_statement
+		;
+
 initializer
 		: '{' initializer_list '}'
 		| '{' initializer_list ',' '}'
@@ -83,8 +96,6 @@ designator
 		: '.' TYPE_ID
 		;
 
-
-
 declarator
 		: direct_declarator
 		; /* not support pointer */
@@ -94,7 +105,7 @@ direct_declarator
 		| '(' declarator ')'
 		| direct_declarator '[' TYPE_INT ']' /* todo may need to let int > 0*/
 		| direct_declarator '(' ')'
-		| direct_declarator '(' parameter_type_list ')'
+		| direct_declarator '(' parameter_list ')'
 		| direct_declarator '(' identifier_list ')'
 		;
 
@@ -103,10 +114,6 @@ identifier_list
 		| identifier_list ',' TOKEN_ID
 		;
 
-parameter_type_list
-		: parameter_list ',' ELLIPSIS
-		| parameter_list
-		;
 
 parameter_list
 		: parameter_declaration
@@ -118,13 +125,36 @@ parameter_declaration
 		| declaration_specifiers
 		; /* ignore abstract delaration here */
 
+compound_statement
+		: '{' '}'
+		| '{' block_item_list '}'
+		;
+
+block_item_list
+		: block_item
+		| block_item_list block_item
+		;
+
+block_item
+		: declaration
+		| statement
+		;
+
+statement
+		: compound_statement
+		| expression_statement
+		| selection_statement
+		| iteration_statement
+		| jump_statement
+		; /* not support labeled statement */
 
 
 %%
 
-int yyerror( char *msg ) {	
-	fprintf( stderr, "*** Error at line %d: %s\n", linenum, buff );
+int yyerror(const char *msg ) {	
+	fprintf( stderr, "*** Error at line %d: %s\n", cur_line_num, cur_line_content );
 	fprintf( stderr, "\n" );
 	fprintf( stderr, "Unmatched token: %s\n", yytext );
-	fprintf( stderr, "*** syntax error\n");	exit(-1);
+	fprintf( stderr, "*** syntax error\n");	
+	exit(-1);
 }

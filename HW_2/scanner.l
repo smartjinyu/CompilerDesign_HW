@@ -2,8 +2,6 @@
 #include <string.h>
 //#include "y.tab.h"
 
-int cur_line_num = 1;
-char cur_line_content[256];
 int isSourceOn = 1;
 int isTokenOn = 1;
 void print_token(int token);
