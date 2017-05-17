@@ -117,3 +117,14 @@ parameter_declaration
 		: declaration_specifiers declarator
 		| declaration_specifiers
 		; /* ignore abstract delaration here */
+
+
+
+%%
+
+int yyerror( char *msg ) {	
+	fprintf( stderr, "*** Error at line %d: %s\n", linenum, buff );
+	fprintf( stderr, "\n" );
+	fprintf( stderr, "Unmatched token: %s\n", yytext );
+	fprintf( stderr, "*** syntax error\n");	exit(-1);
+}
