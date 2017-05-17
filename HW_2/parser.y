@@ -10,3 +10,110 @@ void yyerror(const char* msg) {}
 %token STDIO_PRINTF STDIO_SCANF STDIO_GETC STDIO_GETS STDIO_GETCHAR STDIO_PUTS STDIO_PUTCHAR STDIO_CLEARERR STDIO_FOPEN STDIO_FCLOSE STDIO_GETW STDIO_PUTW STDIO_PUTC STDIO_FPUTC STDIO_FGETS STDIO_FPUTS STDIO_FEOF STDIO_FGETC STDIO_FPRINTF STDIO_FSCANF STDIO_FSEEK STDIO_FTELL STDIO_REWIND STDIO_SPRINTF STDIO_SSCANF STDIO_REMOVE STDIO_FFLUSH
 %token TOKEN_ID TOKEN_STRING TOKEN_CHAR TOKEN_INTEGER TOKEN_DOUBLE TOKEN_SCI
 %token OTHER_SPACE OTHER_COMMENT OTHER_MULTICOMMENT OTHRE_SOURCEON OTHER_SOURCEOFF OTHER_TOKENON OTHER_TOKENOFF
+
+%start starting_unit
+%%
+
+starting_unit
+		: external_declaration
+		| starting_unit external_declaration
+		;
+
+external_declaration
+		: function_definition
+		| declaration
+		;
+
+declaration
+		: declaration_specifiers ';'
+		| declaration_specifiers init_declarator_list ';'
+		;
+
+declaration_specifiers
+		: type_specifier
+		| type_specifier declaration_specifiers
+		| type_qualifier
+		| type_qualifier declaration_specifiers
+		;
+
+type_specifier
+		: TYPE_CHAR
+		| TYPE_BOOL
+		| TYPE_INT
+		| TYPE_DOUBLE
+		; /* not support struct or union except array */
+
+type_qualifier
+		: KEY_CONST
+		; /* not support restrict atomic volatile */
+
+init_declarator_list
+		: init_declarator
+		| init_declarator_list ',' init_declarator
+		;
+
+init_declarator
+		: declarator '=' initializer
+		| declarator
+		;
+
+initializer
+		: '{' initializer_list '}'
+		| '{' initializer_list ',' '}'
+		| assignment_expression
+		;
+
+initializer_list
+		: designation initializer
+		| initializer
+		| initializer_list ',' designation initializer
+		| initializer_list ',' initializer
+		;
+
+designation
+		: designator_list '='
+		;
+
+designator_list
+		: designator
+		| designator_list designator
+		;
+
+designator
+		: '.' TYPE_ID
+		;
+
+
+
+declarator
+		: direct_declarator
+		; /* not support pointer */
+
+direct_declarator
+		: TOKEN_ID
+		| '(' declarator ')'
+		| direct_declarator '[' TYPE_INT ']' /* todo may need to let int > 0*/
+		| direct_declarator '(' ')'
+		| direct_declarator '(' parameter_type_list ')'
+		| direct_declarator '(' identifier_list ')'
+		;
+
+identifier_list
+		: TOKEN_ID
+		| identifier_list ',' TOKEN_ID
+		;
+
+parameter_type_list
+		: parameter_list ',' ELLIPSIS
+		| parameter_list
+		;
+
+parameter_list
+		: parameter_declaration
+		| parameter_list ',' parameter_declaration
+		;
+
+parameter_declaration
+		: declaration_specifiers declarator
+		| declaration_specifiers
+		; /* ignore abstract delaration here */
