@@ -103,7 +103,7 @@ declarator
 direct_declarator
 		: TOKEN_ID
 		| '(' declarator ')'
-		| direct_declarator '[' TYPE_INT ']' /* todo may need to let int > 0*/
+		| direct_declarator '[' TOKEN_INTEGER ']' /* todo may need to let int > 0*/
 		| direct_declarator '(' ')'
 		| direct_declarator '(' parameter_list ')'
 		| direct_declarator '(' identifier_list ')'
@@ -148,7 +148,150 @@ statement
 		| jump_statement
 		; /* not support labeled statement */
 
+expression_statement
+		: ';'
+		| expression ';'
+		;
 
+expression
+		: assignment_expression
+		| expression ',' assignment_expression
+		;
+
+assignment_expression
+		: conditional_expression
+		| unary_expression assignment_expression assignment_expression
+		;
+
+conditional_expression
+		: logical_or_expression
+		| logical_or_expression '?' expression ':' conditional_expression /* may not need to support */
+		;
+
+logical_or_expression
+		: logical_and_expression
+		| logical_or_expression OP_OR logical_and_expression
+		;
+
+logical_and_expression
+		: inclusive_or_expression
+		| logical_and_expression OP_AND inclusive_or_expression
+		;
+
+inclusive_or_expression
+		: exclusive_or_expression
+		| inclusive_or_expression '|' exclusive_or_expression
+		;
+
+exclusive_or_expression
+		: and_expression 
+		| exclusive_or_expression '^' and_expression
+		; /* may need to eliminate */
+
+and_expression
+		: equality_expression
+		| and_expression '&' equality_expression
+		;
+
+equality_expression
+		: relational_expression
+		| equality_expression OP_2EQUAL relational_expression
+		| equality_expression OP_NE relational_expression
+		;
+
+relational_expression
+		: shift_expression
+		| relational_expression OP_GREATER shift_expression
+		| relational_expression OP_GE shift_expression
+		| relational_expression OP_LESS shift_expression
+		| relational_expression OP_LE shift_expression
+		;
+
+shift_expression
+		: additive_expression
+		; /* not support << >> punc */
+
+additive_expression
+		: multiplicative_expression
+		| additive_expression OP_PLUS multiplicative_expression
+		| additive_expression OP_MINUS multiplicative_expression
+		;
+
+multiplicative_expression
+		: cast_expression
+		| multiplicative_expression OP_MULTIPLE cast_expression
+		| multiplicative_expression OP_DIVIDE cast_expression
+		| multiplicative_expression OP_PERCENT cast_expression
+		;
+
+cast_expression
+		: unary_expression
+		; /* not support type cast */
+
+unary_expression
+		: postfix_expression
+		| OP_2PLUS unary_expression
+		| OP_2MINUS unary_expression
+		| unary_operator cast_expression
+		; /* not support sizeof alignof */
+
+unary_operator
+		: OP_ADDR
+		| OP_POINTER
+		| OP_PLUS
+		| OP_MINUS
+		| OP_NOT
+		;
+
+postfix_expression
+		: primary_expression
+		| postfix_expression '[' TOKEN_INTEGER ']'
+		| postfix_expression '(' ')'
+		| postfix_expression '(' argument_expression_list ')'
+		| postfix_expression '.' TOKEN_ID
+		| postfix_expression OP_2PLUS
+		| postfix_expression OP_2MINUS
+		; /* may need to support initializer list */
+
+primary_expression
+		: TOKEN_ID
+		| constant
+		| TOKEN_STRING
+		| '(' expression ')'
+		;
+
+constant
+		: TOKEN_INTEGER
+		| TOKEN_DOUBLE
+		| TOKEN_SCI
+		;
+
+argument_expression_list
+		: assignment_expression
+		| argument_expression_list ',' assignment_expression
+		;
+
+selection_statement
+		: KEY_IF '(' expression ')' statement KEY_ELSE statement
+		| KEY_IF '(' expression ')' statement
+		| KEY_SWITCH '(' expression ')' statement
+		;
+
+iteration_statement
+		: KEY_WHILE '(' expression ')' statement
+		| KEY_DO statement KEY_WHILE '(' expression ')' ';'
+		| KEY_FOR '(' expression_statement expression_statement ')' statement
+		| KEY_FOR '(' expression_statement expression_statement expression ')' statement
+		| KEY_FOR '(' declaration expression_statement ')' statement
+		| KEY_FOR '(' declaration expression_statement expression ')' statement
+		;
+
+jump_statement
+		: KEY_CONTINUE ';'
+		| KEY_BREAK ';'
+		| KEY_RETURN ';'
+		| KEY_RETURN expression ';'
+		;
 %%
 
 int yyerror(const char *msg ) {	
