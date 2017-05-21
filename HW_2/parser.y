@@ -12,6 +12,9 @@ void yyerror(const char* msg);
 %token TOKEN_ID TOKEN_STRING TOKEN_CHAR TOKEN_INTEGER TOKEN_DOUBLE TOKEN_SCI
 %token OTHER_SPACE OTHER_COMMENT OTHER_MULTICOMMENT OTHRE_SOURCEON OTHER_SOURCEOFF OTHER_TOKENON OTHER_TOKENOFF
 
+%nonassoc LOWER_THAN_ELSE
+%nonassoc KEY_ELSE
+
 %start starting_unit
 %%
 
@@ -70,7 +73,7 @@ function_definition
 
 initializer
 		: PUNC_LBRACE initializer_list PUNC_RBRACE
-		| PUNC_LBRACE initializer_list PUNC_COMMA PUNC_RBRACE /* may need to eliminate*/
+		| PUNC_LBRACE initializer_list PUNC_COMMA PUNC_RBRACE
 		| assignment_expression
 		;
 
@@ -157,12 +160,8 @@ expression
 		;
 
 assignment_expression
-		: conditional_expression
-		| unary_expression assignment_expression assignment_expression
-		;
-
-conditional_expression
 		: logical_or_expression
+		| unary_expression OP_EQUAL assignment_expression
 		;
 
 logical_or_expression
@@ -171,19 +170,9 @@ logical_or_expression
 		;
 
 logical_and_expression
-		: inclusive_or_expression
-		| logical_and_expression OP_AND inclusive_or_expression
+		: and_expression
+		| logical_and_expression OP_AND and_expression
 		;
-
-inclusive_or_expression
-		: exclusive_or_expression
-		| inclusive_or_expression '|' exclusive_or_expression /* should eliminate */
-		;
-
-exclusive_or_expression
-		: and_expression 
-		| exclusive_or_expression '^' and_expression /* should eliminate */
-		; /* may need to eliminate */
 
 and_expression
 		: equality_expression
@@ -197,16 +186,12 @@ equality_expression
 		;
 
 relational_expression
-		: shift_expression
-		| relational_expression OP_GREATER shift_expression
-		| relational_expression OP_GE shift_expression
-		| relational_expression OP_LESS shift_expression
-		| relational_expression OP_LE shift_expression
-		;
-
-shift_expression
 		: additive_expression
-		; /* not support << >> punc */
+		| relational_expression OP_GREATER additive_expression
+		| relational_expression OP_GE additive_expression
+		| relational_expression OP_LESS additive_expression
+		| relational_expression OP_LE additive_expression
+		;
 
 additive_expression
 		: multiplicative_expression
@@ -215,21 +200,17 @@ additive_expression
 		;
 
 multiplicative_expression
-		: cast_expression
-		| multiplicative_expression OP_MULTIPLE cast_expression
-		| multiplicative_expression OP_DIVIDE cast_expression
-		| multiplicative_expression OP_PERCENT cast_expression
-		;
-
-cast_expression
 		: unary_expression
-		; /* not support type cast */
+		| multiplicative_expression OP_MULTIPLE unary_expression
+		| multiplicative_expression OP_DIVIDE unary_expression
+		| multiplicative_expression OP_PERCENT unary_expression
+		;
 
 unary_expression
 		: postfix_expression
 		| OP_2PLUS unary_expression
 		| OP_2MINUS unary_expression
-		| unary_operator cast_expression
+		| unary_operator unary_expression
 		; /* not support sizeof alignof */
 
 unary_operator
@@ -270,7 +251,7 @@ argument_expression_list
 
 selection_statement
 		: KEY_IF PUNC_LPERAN expression PUNC_RPERAN statement KEY_ELSE statement
-		| KEY_IF PUNC_LPERAN expression PUNC_RPERAN statement
+		| KEY_IF PUNC_LPERAN expression PUNC_RPERAN statement %prec LOWER_THAN_ELSE
 		| KEY_SWITCH PUNC_LPERAN expression PUNC_RPERAN statement
 		;
 
@@ -291,6 +272,8 @@ jump_statement
 		;
 %%
 int main(){
-	return yyparse();
+	yyparse();
+	printf("No syntax error!\n");
+	return 0;
 }
 
