@@ -70,7 +70,7 @@ function_definition
 
 initializer
 		: PUNC_LBRACE initializer_list PUNC_RBRACE
-		| PUNC_LBRACE initializer_list PUNC_COMMA PUNC_RBRACE
+		| PUNC_LBRACE initializer_list PUNC_COMMA PUNC_RBRACE /* may need to eliminate*/
 		| assignment_expression
 		;
 

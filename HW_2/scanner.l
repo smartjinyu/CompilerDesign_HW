@@ -43,17 +43,17 @@ TOKENON			("#pragma token on")
 
 
 %%
-{SINGLE_COMMENT}	{ strcat(cur_line_content,yytext); return OTHER_COMMENT; }
-"/*"				{ BEGIN(COMMENT); strcat(cur_line_content,yytext); return OTHER_MULTICOMMENT; }
-<COMMENT>[^*\n]*    { strcat(cur_line_content,yytext); return OTHER_MULTICOMMENT; }
-<COMMENT>"*"+[^*/\n]* { strcat(cur_line_content,yytext); return OTHER_MULTICOMMENT; }
+{SINGLE_COMMENT}	{ strcat(cur_line_content,yytext); /*return OTHER_COMMENT;*/ }
+"/*"				{ BEGIN(COMMENT); strcat(cur_line_content,yytext); /*return OTHER_MULTICOMMENT;*/ }
+<COMMENT>[^*\n]*    { strcat(cur_line_content,yytext); /*return OTHER_MULTICOMMENT;*/ }
+<COMMENT>"*"+[^*/\n]* { strcat(cur_line_content,yytext); /*return OTHER_MULTICOMMENT;*/ }
 <COMMENT>\n 		{ newLine(); }
-<COMMENT>"*"+"/"	{ BEGIN(INITIAL); strcat(cur_line_content,yytext); return OTHER_MULTICOMMENT;}
+<COMMENT>"*"+"/"	{ BEGIN(INITIAL); strcat(cur_line_content,yytext); /*return OTHER_MULTICOMMENT;*/}
 
-{SOURCEON}			{ isSourceOn = 1; strcat(cur_line_content,yytext); return OTHRE_SOURCEON; }
-{SOURCEOFF}			{ isSourceOn = 0; strcat(cur_line_content,yytext); return OTHER_SOURCEOFF; }
-{TOKENON}			{ isTokenOn = 1; strcat(cur_line_content,yytext); return OTHER_TOKENON; }
-{TOKENOFF}			{ isTokenOn = 0; strcat(cur_line_content,yytext); return OTHER_TOKENOFF; }
+{SOURCEON}			{ isSourceOn = 1; strcat(cur_line_content,yytext); /*return OTHRE_SOURCEON;*/ }
+{SOURCEOFF}			{ isSourceOn = 0; strcat(cur_line_content,yytext); /*return OTHER_SOURCEOFF;*/ }
+{TOKENON}			{ isTokenOn = 1; strcat(cur_line_content,yytext); /*return OTHER_TOKENON;*/ }
+{TOKENOFF}			{ isTokenOn = 0; strcat(cur_line_content,yytext); /*return OTHER_TOKENOFF;*/ }
 
 {STRING}			{ strcat(cur_line_content,yytext); print_token(4); return TOKEN_STRING; }
 {UNTERM_STRING}		{ print_error();return 0; }
@@ -71,7 +71,7 @@ TOKENON			("#pragma token on")
 {SCI_INVALID}		{ print_error();return 0; }
 
 [\n]				{ newLine();}
-[ \t\r]+          	{ strcat(cur_line_content,yytext); return OTHER_SPACE;/* ignore all spaces */ }
+[ \t\r]+          	{ strcat(cur_line_content,yytext); /*return OTHER_SPACE;*//* ignore all spaces */ }
 
 "int"				{ BEGIN(VARDEF); strcat(cur_line_content,yytext); print_token(0); return TYPE_INT; }
 "double"			{ BEGIN(VARDEF); strcat(cur_line_content,yytext); print_token(0); return TYPE_DOUBLE; }
@@ -79,7 +79,7 @@ TOKENON			("#pragma token on")
 "char"				{ BEGIN(VARDEF); strcat(cur_line_content,yytext); print_token(0); return TYPE_CHAR; }
 <VARDEF>"="			{ BEGIN(INITIAL); strcat(cur_line_content,yytext); print_token(2); return OP_EQUAL; }
 <VARDEF>";"			{ BEGIN(INITIAL); strcat(cur_line_content,yytext); print_token(3); return PUNC_SEMICOLON; }
-<VARDEF>[ \t\r]+   	{ strcat(cur_line_content,yytext); return OTHER_SPACE;}
+<VARDEF>[ \t\r]+   	{ strcat(cur_line_content,yytext); /*return OTHER_SPACE;*/}
 <VARDEF>"*"			{ strcat(cur_line_content,yytext); print_token(2); return OP_MULTIPLE;}
 <VARDEF>{KEY_WORDS}	{ print_error();return 0; }
 <VARDEF>{IDENTIFIER} { BEGIN(INITIAL);strcat(cur_line_content,yytext); print_token(1); return TOKEN_ID; }
