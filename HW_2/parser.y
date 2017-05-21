@@ -31,8 +31,8 @@ declaration_list
 		;
 
 declaration
-		: declaration_specifiers ';'
-		| declaration_specifiers init_declarator_list ';'
+		: declaration_specifiers PUNC_SEMICOLON
+		| declaration_specifiers init_declarator_list PUNC_SEMICOLON
 		;
 
 declaration_specifiers
@@ -55,11 +55,11 @@ type_qualifier
 
 init_declarator_list
 		: init_declarator
-		| init_declarator_list ',' init_declarator
+		| init_declarator_list PUNC_COMMA init_declarator
 		;
 
 init_declarator
-		: declarator '=' initializer
+		: declarator OP_EQUAL initializer
 		| declarator
 		;
 
@@ -69,20 +69,20 @@ function_definition
 		;
 
 initializer
-		: '{' initializer_list '}'
-		| '{' initializer_list ',' '}'
+		: PUNC_LBRACE initializer_list PUNC_RBRACE
+		| PUNC_LBRACE initializer_list PUNC_COMMA PUNC_RBRACE
 		| assignment_expression
 		;
 
 initializer_list
 		: designation initializer
 		| initializer
-		| initializer_list ',' designation initializer
-		| initializer_list ',' initializer
+		| initializer_list PUNC_COMMA designation initializer
+		| initializer_list PUNC_COMMA initializer
 		;
 
 designation
-		: designator_list '='
+		: designator_list OP_EQUAL
 		;
 
 designator_list
@@ -91,7 +91,7 @@ designator_list
 		;
 
 designator
-		: '.' TOKEN_ID
+		: PUNC_DOT TOKEN_ID
 		;
 
 declarator
@@ -100,22 +100,22 @@ declarator
 
 direct_declarator
 		: TOKEN_ID
-		| '(' declarator ')'
-		| direct_declarator '[' TOKEN_INTEGER ']' /* todo may need to let int > 0*/
-		| direct_declarator '(' ')'
-		| direct_declarator '(' parameter_list ')'
-		| direct_declarator '(' identifier_list ')'
+		| PUNC_LPERAN declarator PUNC_RPERAN
+		| direct_declarator PUNC_LBRACKET TOKEN_INTEGER PUNC_RBRACKET /* todo may need to let int > 0*/
+		| direct_declarator PUNC_LPERAN PUNC_RPERAN
+		| direct_declarator PUNC_LPERAN parameter_list PUNC_RPERAN
+		| direct_declarator PUNC_LPERAN identifier_list PUNC_RPERAN
 		;
 
 identifier_list
 		: TOKEN_ID
-		| identifier_list ',' TOKEN_ID
+		| identifier_list PUNC_COMMA TOKEN_ID
 		;
 
 
 parameter_list
 		: parameter_declaration
-		| parameter_list ',' parameter_declaration
+		| parameter_list PUNC_COMMA parameter_declaration
 		;
 
 parameter_declaration
@@ -124,8 +124,8 @@ parameter_declaration
 		; /* ignore abstract delaration here */
 
 compound_statement
-		: '{' '}'
-		| '{' block_item_list '}'
+		: PUNC_LBRACE PUNC_RBRACE
+		| PUNC_LBRACE block_item_list PUNC_RBRACE
 		;
 
 block_item_list
@@ -147,13 +147,13 @@ statement
 		; /* not support labeled statement */
 
 expression_statement
-		: ';'
-		| expression ';'
+		: PUNC_SEMICOLON
+		| expression PUNC_SEMICOLON
 		;
 
 expression
 		: assignment_expression
-		| expression ',' assignment_expression
+		| expression PUNC_COMMA assignment_expression
 		;
 
 assignment_expression
@@ -163,7 +163,6 @@ assignment_expression
 
 conditional_expression
 		: logical_or_expression
-		| logical_or_expression '?' expression ':' conditional_expression /* may not need to support */
 		;
 
 logical_or_expression
@@ -178,17 +177,17 @@ logical_and_expression
 
 inclusive_or_expression
 		: exclusive_or_expression
-		| inclusive_or_expression '|' exclusive_or_expression
+		| inclusive_or_expression '|' exclusive_or_expression /* should eliminate */
 		;
 
 exclusive_or_expression
 		: and_expression 
-		| exclusive_or_expression '^' and_expression
+		| exclusive_or_expression '^' and_expression /* should eliminate */
 		; /* may need to eliminate */
 
 and_expression
 		: equality_expression
-		| and_expression '&' equality_expression
+		| and_expression OP_ADDR equality_expression
 		;
 
 equality_expression
@@ -243,10 +242,10 @@ unary_operator
 
 postfix_expression
 		: primary_expression
-		| postfix_expression '[' TOKEN_INTEGER ']'
-		| postfix_expression '(' ')'
-		| postfix_expression '(' argument_expression_list ')'
-		| postfix_expression '.' TOKEN_ID
+		| postfix_expression PUNC_LBRACKET TOKEN_INTEGER PUNC_RBRACKET
+		| postfix_expression PUNC_LPERAN PUNC_RPERAN
+		| postfix_expression PUNC_LPERAN argument_expression_list PUNC_RPERAN
+		| postfix_expression PUNC_DOT TOKEN_ID
 		| postfix_expression OP_2PLUS
 		| postfix_expression OP_2MINUS
 		; /* may need to support initializer list */
@@ -255,7 +254,7 @@ primary_expression
 		: TOKEN_ID
 		| constant
 		| TOKEN_STRING
-		| '(' expression ')'
+		| PUNC_LPERAN expression PUNC_RPERAN
 		;
 
 constant
@@ -266,29 +265,29 @@ constant
 
 argument_expression_list
 		: assignment_expression
-		| argument_expression_list ',' assignment_expression
+		| argument_expression_list PUNC_COMMA assignment_expression
 		;
 
 selection_statement
-		: KEY_IF '(' expression ')' statement KEY_ELSE statement
-		| KEY_IF '(' expression ')' statement
-		| KEY_SWITCH '(' expression ')' statement
+		: KEY_IF PUNC_LPERAN expression PUNC_RPERAN statement KEY_ELSE statement
+		| KEY_IF PUNC_LPERAN expression PUNC_RPERAN statement
+		| KEY_SWITCH PUNC_LPERAN expression PUNC_RPERAN statement
 		;
 
 iteration_statement
-		: KEY_WHILE '(' expression ')' statement
-		| KEY_DO statement KEY_WHILE '(' expression ')' ';'
-		| KEY_FOR '(' expression_statement expression_statement ')' statement
-		| KEY_FOR '(' expression_statement expression_statement expression ')' statement
-		| KEY_FOR '(' declaration expression_statement ')' statement
-		| KEY_FOR '(' declaration expression_statement expression ')' statement
+		: KEY_WHILE PUNC_LPERAN expression PUNC_RPERAN statement
+		| KEY_DO statement KEY_WHILE PUNC_LPERAN expression PUNC_RPERAN PUNC_SEMICOLON
+		| KEY_FOR PUNC_LPERAN expression_statement expression_statement PUNC_RPERAN statement
+		| KEY_FOR PUNC_LPERAN expression_statement expression_statement expression PUNC_RPERAN statement
+		| KEY_FOR PUNC_LPERAN declaration expression_statement PUNC_RPERAN statement
+		| KEY_FOR PUNC_LPERAN declaration expression_statement expression PUNC_RPERAN statement
 		;
 
 jump_statement
-		: KEY_CONTINUE ';'
-		| KEY_BREAK ';'
-		| KEY_RETURN ';'
-		| KEY_RETURN expression ';'
+		: KEY_CONTINUE PUNC_SEMICOLON
+		| KEY_BREAK PUNC_SEMICOLON
+		| KEY_RETURN PUNC_SEMICOLON
+		| KEY_RETURN expression PUNC_SEMICOLON
 		;
 %%
 int main(){
