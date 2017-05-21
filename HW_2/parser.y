@@ -19,8 +19,11 @@ void yyerror(const char* msg);
 %%
 
 starting_unit
-		: external_declaration
-		| starting_unit external_declaration
+		: zero_or_more_declaration function_definition
+		;
+zero_or_more_declaration
+		: /* empty */
+		| zero_or_more_declaration external_declaration	
 		;
 
 external_declaration
