@@ -1,54 +1,16 @@
 %{
 #include <string.h>
-//#include "y.tab.h"
+#include "y.tab.h"
 
 int isSourceOn = 1;
 int isTokenOn = 1;
+int cur_line_num = 1;
+char cur_line_content[256];
+
 void print_token(int token);
 void print_error();
 void newLine();
 
-typedef enum{
-	TYPE_INT=10,TYPE_DOUBLE,TYPE_BOOL,TYPE_CHAR
-} TYPES;
-
-typedef enum{
-	OP_PLUS=30,OP_MINUS,OP_MULTIPLE,OP_DIVIDE,OP_PERCENT,OP_2PLUS,
-	OP_2MINUS,OP_LESS,OP_LE,OP_GREATER,OP_GE,OP_2EQUAL,OP_NE,
-	OP_EQUAL,OP_AND,OP_OR,OP_NOT,OP_POINTER,OP_ADDR
-} OPERATORS;
-
-typedef enum{
-	PUNC_COLON=60,PUNC_SEMICOLON,PUNC_COMMA,PUNC_DOT,
-	PUNC_LBRACKET,PUNC_RBRACKET,PUNC_LPERAN,PUNC_RPERAN,
-	PUNC_LBRACE,PUNC_RBRACE
-} PUNCTUATIONS;
-
-typedef enum{
-	KEY_VOID=80,KEY_NULL,KEY_FOR,KEY_WHILE,KEY_DO,KEY_IF,
-	KEY_ELSE,KEY_SWITCH,KEY_RETURN,KEY_BREAK,KEY_CONTINUE,
-	KEY_CONST,KEY_TRUE,KEY_FALSE,KEY_STRUCT,KEY_CASE,
-	KEY_DEFAULT
-} KEYWORDS;
-
-typedef enum{
-	STDIO_PRINTF=120,STDIO_SCANF,STDIO_GETC,STDIO_GETS,
-	STDIO_GETCHAR,STDIO_PUTS,STDIO_PUTCHAR,STDIO_CLEARERR,
-	STDIO_FOPEN,STDIO_FCLOSE,STDIO_GETW,STDIO_PUTW,
-	STDIO_PUTC,STDIO_FPUTC,STDIO_FGETS,STDIO_FPUTS,STDIO_FEOF,
-	STDIO_FGETC,STDIO_FPRINTF,STDIO_FSCANF,STDIO_FSEEK,STDIO_FTELL,
-	STDIO_REWIND,STDIO_SPRINTF,STDIO_SSCANF,STDIO_REMOVE,STDIO_FFLUSH
-} STDIOFUNC;
-
-typedef enum{
-	TOKEN_ID = 300,TOKEN_STRING, TOKEN_CHAR, TOKEN_INTEGER, 
-	TOKEN_DOUBLE,TOKEN_SCI
-} TokenType;
-
-typedef enum{
-	OTHER_SPACE=500,OTHER_COMMENT,OTHER_MULTICOMMENT,OTHRE_SOURCEON,
-	OTHER_SOURCEOFF,OTHER_TOKENON,OTHER_TOKENOFF
-} Others;
 %}
 
 
@@ -205,14 +167,6 @@ TOKENON			("#pragma token on")
 .					{ print_error(); return 0; }
 
 %%
-
-int main(){
-	int token;
-	while(token=yylex()){
-		
-	}
-	return 0;
-}
 
 int yywrap(){
 	return 1;
@@ -377,4 +331,12 @@ void newLine(){
 	}
 	memset(cur_line_content,0,sizeof(cur_line_content));
 	cur_line_num++;
+}
+
+void yyerror(const char *msg ) {	
+	fprintf( stderr, "*** Error at line %d: %s\n", cur_line_num, cur_line_content );
+	fprintf( stderr, "\n" );
+	fprintf( stderr, "Unmatched token: %s\n", yytext );
+	fprintf( stderr, "*** syntax error\n");	
+	exit(-1);
 }

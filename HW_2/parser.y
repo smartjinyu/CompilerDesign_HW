@@ -1,9 +1,7 @@
 %{
 #include <stdio.h>
-int cur_line_num = 1;
-char cur_line_content[256];
-
-int yyerror(const char* msg) {}
+int yylex();
+void yyerror(const char* msg);
 %}
 
 %token TYPE_INT TYPE_DOUBLE TYPE_BOOL TYPE_CHAR
@@ -93,7 +91,7 @@ designator_list
 		;
 
 designator
-		: '.' TYPE_ID
+		: '.' TOKEN_ID
 		;
 
 declarator
@@ -293,11 +291,7 @@ jump_statement
 		| KEY_RETURN expression ';'
 		;
 %%
-
-int yyerror(const char *msg ) {	
-	fprintf( stderr, "*** Error at line %d: %s\n", cur_line_num, cur_line_content );
-	fprintf( stderr, "\n" );
-	fprintf( stderr, "Unmatched token: %s\n", yytext );
-	fprintf( stderr, "*** syntax error\n");	
-	exit(-1);
+int main(){
+	return yyparse();
 }
+
