@@ -130,7 +130,8 @@ function_definition
 
 
 initializer
-		: PUNC_LBRACE initializer_list PUNC_RBRACE
+		: PUNC_LBRACE PUNC_RBRACE
+		| PUNC_LBRACE initializer_list PUNC_RBRACE
 		| PUNC_LBRACE initializer_list PUNC_COMMA PUNC_RBRACE
 		| assignment_expression_without_func
 		;
