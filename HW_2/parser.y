@@ -42,7 +42,6 @@ declaration
 		| declaration_no_const /* variables and array */
 		;
 
-////
 declaration_const
 		: declaration_specifiers_const PUNC_SEMICOLON
 		| declaration_specifiers_const init_declarator_list_const PUNC_SEMICOLON
@@ -86,7 +85,6 @@ direct_declarator_const
 		| direct_declarator_const PUNC_LPERAN identifier_list PUNC_RPERAN
 		;
 
-////
 declaration_no_const
 		: declaration_specifiers_no_const PUNC_SEMICOLON
 		| declaration_specifiers_no_const init_declarator_list_no_const PUNC_SEMICOLON
@@ -121,7 +119,7 @@ direct_declarator_no_const
 		| direct_declarator_no_const PUNC_LPERAN identifier_list PUNC_RPERAN
 		;
 
-////
+
 function_definition
 		: declaration_specifiers_no_const declarator_no_const declaration_list compound_statement
 		| declaration_specifiers_no_const declarator_no_const compound_statement
@@ -369,7 +367,30 @@ argument_expression_list
 selection_statement
 		: KEY_IF PUNC_LPERAN expression PUNC_RPERAN statement KEY_ELSE statement
 		| KEY_IF PUNC_LPERAN expression PUNC_RPERAN statement %prec LOWER_THAN_ELSE
-		| KEY_SWITCH PUNC_LPERAN expression PUNC_RPERAN statement
+		| KEY_SWITCH PUNC_LPERAN identifier_list PUNC_RPERAN PUNC_LBRACE switch_content PUNC_RBRACE
+		;
+
+switch_content
+		: one_or_more_case
+		| one_or_more_case default_statement
+		;
+
+one_or_more_case
+		: case_statement
+		| one_or_more_case case_statement
+		;
+
+case_statement
+		: KEY_CASE int_or_char_const PUNC_COLON zero_or_more_statement
+		;
+
+default_statement
+		: KEY_DEFAULT PUNC_COLON zero_or_more_statement
+		;
+
+int_or_char_const
+		: TOKEN_INTEGER
+		| TOKEN_CHAR
 		;
 
 iteration_statement
