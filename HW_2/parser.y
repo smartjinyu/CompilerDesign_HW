@@ -75,7 +75,11 @@ init_declarator
 function_definition
 		: declaration_specifiers declarator declaration_list compound_statement
 		| declaration_specifiers declarator compound_statement
+		| KEY_VOID declarator declaration_list compound_statement
+		| KEY_VOID declarator compound_statement
 		;
+
+
 
 initializer
 		: PUNC_LBRACE initializer_list PUNC_RBRACE
