@@ -21,6 +21,7 @@ void yyerror(const char* msg);
 starting_unit
 		: zero_or_more_declaration function_definition
 		;
+
 zero_or_more_declaration
 		: /* empty */
 		| zero_or_more_declaration external_declaration	
@@ -77,7 +78,7 @@ function_definition
 initializer
 		: PUNC_LBRACE initializer_list PUNC_RBRACE
 		| PUNC_LBRACE initializer_list PUNC_COMMA PUNC_RBRACE
-		| assignment_expression
+		| assignment_expression_without_func
 		;
 
 initializer_list
@@ -167,6 +168,11 @@ assignment_expression
 		| unary_expression OP_EQUAL assignment_expression
 		;
 
+assignment_expression_without_func
+		: logical_or_expression_without_func
+		| unary_expression_without_func OP_EQUAL assignment_expression_without_func
+		;
+
 logical_or_expression
 		: logical_and_expression
 		| logical_or_expression OP_OR logical_and_expression
@@ -246,6 +252,71 @@ constant
 		| TOKEN_DOUBLE
 		| TOKEN_SCI
 		;
+
+logical_or_expression_without_func
+		: logical_and_expression_without_func
+		| logical_or_expression_without_func OP_OR logical_and_expression_without_func
+		;
+
+logical_and_expression_without_func
+		: and_expression_without_func
+		| logical_and_expression_without_func OP_AND and_expression_without_func
+		;
+
+and_expression_without_func
+		: equality_expression_without_func
+		| and_expression_without_func OP_ADDR equality_expression_without_func
+		;
+
+equality_expression_without_func
+		: relational_expression_without_func
+		| equality_expression_without_func OP_2EQUAL relational_expression_without_func
+		| equality_expression_without_func OP_NE relational_expression_without_func
+		;
+
+relational_expression_without_func
+		: additive_expression_without_func
+		| relational_expression_without_func OP_GREATER additive_expression_without_func
+		| relational_expression_without_func OP_GE additive_expression_without_func
+		| relational_expression_without_func OP_LESS additive_expression_without_func
+		| relational_expression_without_func OP_LE additive_expression_without_func
+		;
+
+additive_expression_without_func
+		: multiplicative_expression_without_func
+		| additive_expression_without_func OP_PLUS multiplicative_expression_without_func
+		| additive_expression_without_func OP_MINUS multiplicative_expression_without_func
+		;
+
+multiplicative_expression_without_func
+		: unary_expression_without_func
+		| multiplicative_expression_without_func OP_MULTIPLE unary_expression_without_func
+		| multiplicative_expression_without_func OP_DIVIDE unary_expression_without_func
+		| multiplicative_expression_without_func OP_PERCENT unary_expression_without_func
+		;
+
+unary_expression_without_func
+		: postfix_expression_without_func
+		| OP_2PLUS unary_expression_without_func
+		| OP_2MINUS unary_expression_without_func
+		| unary_operator unary_expression_without_func
+		; /* not support sizeof alignof */
+
+postfix_expression_without_func
+		: primary_expression_without_func
+		| postfix_expression_without_func PUNC_LBRACKET TOKEN_INTEGER PUNC_RBRACKET
+		| postfix_expression_without_func PUNC_DOT TOKEN_ID
+		| postfix_expression_without_func OP_2PLUS
+		| postfix_expression_without_func OP_2MINUS
+		; /* may need to support initializer list */
+
+primary_expression_without_func
+		: TOKEN_ID
+		| constant
+		| TOKEN_STRING
+		| PUNC_LPERAN expression PUNC_RPERAN
+		;
+
 
 argument_expression_list
 		: assignment_expression
