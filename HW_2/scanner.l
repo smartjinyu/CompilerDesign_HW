@@ -107,31 +107,31 @@ TOKENON			("#pragma token on")
 "case"				{ strcat(cur_line_content,yytext); print_token(0); return KEY_CASE; }
 "default"			{ strcat(cur_line_content,yytext); print_token(0); return KEY_DEFAULT; }
 
-"printf"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PRINTF; }
-"scanf"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_SCANF; }
-"getc"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_GETC; }
-"gets"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_GETS; }
-"getchar"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_GETCHAR; }
-"puts"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PUTS; }
-"putchar"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PUTCHAR; }
-"clearerr"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_CLEARERR; }
-"fopen"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FOPEN; }
-"fclose"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FCLOSE; }
-"getw"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_GETW; }
-"putw"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PUTW; }
-"fgetc"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FGETC; }
-"putc"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_PUTC; }
-"fputc"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FPUTC; }
-"fgets"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FGETS; }
-"fputs"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FPUTS; }
-"feof"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FEOF; }
-"fseek"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FSEEK; }
-"ftell"				{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FTELL; }
-"rewind"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_REWIND; }
-"sprintf"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_SPRINTF; }
-"sscanf"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_SSCANF; }
-"remove"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_REMOVE; }
-"fflush"			{ strcat(cur_line_content,yytext); print_token(0); return STDIO_FFLUSH; }
+"printf"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_PRINTF; */ }
+"scanf"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_SCANF; */ }
+"getc"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_GETC; */ }
+"gets"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_GETS; */ }
+"getchar"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_GETCHAR; */ }
+"puts"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_PUTS; */ }
+"putchar"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_PUTCHAR; */ }
+"clearerr"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_CLEARERR; */ }
+"fopen"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FOPEN; */ }
+"fclose"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FCLOSE; */ }
+"getw"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_GETW; */ }
+"putw"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_PUTW; */ }
+"fgetc"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FGETC; */ }
+"putc"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_PUTC; */ }
+"fputc"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FPUTC; */ }
+"fgets"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FGETS; */ }
+"fputs"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FPUTS; */ }
+"feof"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FEOF; */ }
+"fseek"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FSEEK; */ }
+"ftell"				{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FTELL; */ }
+"rewind"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_REWIND; */ }
+"sprintf"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_SPRINTF; */ }
+"sscanf"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_SSCANF; */ }
+"remove"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_REMOVE; */ }
+"fflush"			{ strcat(cur_line_content,yytext); print_token(0); /* return STDIO_FFLUSH; */ }
 
 "+"					{ strcat(cur_line_content,yytext); print_token(2); return OP_PLUS; }
 "-"					{ strcat(cur_line_content,yytext); print_token(2); return OP_MINUS; }

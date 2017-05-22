@@ -1,2 +1,5 @@
 a.out
 lex.yy.c
+test_sample_no_credit/scanner
+test_sample_no_credit/scanner1
+test_sample_no_credit/my_test_answer
