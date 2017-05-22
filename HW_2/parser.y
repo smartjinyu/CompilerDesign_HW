@@ -56,6 +56,7 @@ type_specifier
 		| TYPE_DOUBLE
 		; /* not support struct or union except array */
 
+
 type_qualifier
 		: KEY_CONST
 		; /* not support restrict atomic volatile */
@@ -69,6 +70,7 @@ init_declarator
 		: declarator OP_EQUAL initializer
 		| declarator
 		;
+
 
 function_definition
 		: declaration_specifiers declarator declaration_list compound_statement
@@ -131,18 +133,17 @@ parameter_declaration
 		; /* ignore abstract delaration here */
 
 compound_statement
-		: PUNC_LBRACE PUNC_RBRACE
-		| PUNC_LBRACE block_item_list PUNC_RBRACE
+		: PUNC_LBRACE block_item_list PUNC_RBRACE
 		;
 
 block_item_list
-		: block_item
-		| block_item_list block_item
+		: zero_or_more_declaration zero_or_more_statement
 		;
 
-block_item
-		: declaration
-		| statement
+
+zero_or_more_statement
+		: /* empty */
+		| zero_or_more_statement statement
 		;
 
 statement
