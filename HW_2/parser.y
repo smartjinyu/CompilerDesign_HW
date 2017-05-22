@@ -38,15 +38,18 @@ declaration_list
 		;
 
 declaration
-		: declaration_specifiers PUNC_SEMICOLON
-		| declaration_specifiers init_declarator_list PUNC_SEMICOLON
+		: declaration_const /* only variables */
+		| declaration_no_const /* variables and array */
 		;
 
-declaration_specifiers
-		: type_specifier
-		| type_specifier declaration_specifiers
-		| type_qualifier
-		| type_qualifier declaration_specifiers
+////
+declaration_const
+		: declaration_specifiers_const PUNC_SEMICOLON
+		| declaration_specifiers_const init_declarator_list_const PUNC_SEMICOLON
+		;
+
+declaration_specifiers_const
+		: type_qualifier type_specifier
 		;
 
 type_specifier
@@ -61,22 +64,69 @@ type_qualifier
 		: KEY_CONST
 		; /* not support restrict atomic volatile */
 
-init_declarator_list
-		: init_declarator
-		| init_declarator_list PUNC_COMMA init_declarator
+init_declarator_list_const
+		: init_declarator_const
+		| init_declarator_list_const PUNC_COMMA init_declarator_const
 		;
 
-init_declarator
-		: declarator OP_EQUAL initializer
-		| declarator
+init_declarator_const
+		: declarator_const OP_EQUAL initializer
+		| declarator_const
+		;
+
+declarator_const
+		: direct_declarator_const
+		; /* not support pointer */
+
+direct_declarator_const
+		: TOKEN_ID
+		| PUNC_LPERAN declarator_const PUNC_RPERAN
+		| direct_declarator_const PUNC_LPERAN PUNC_RPERAN
+		| direct_declarator_const PUNC_LPERAN parameter_list PUNC_RPERAN
+		| direct_declarator_const PUNC_LPERAN identifier_list PUNC_RPERAN
+		;
+
+////
+declaration_no_const
+		: declaration_specifiers_no_const PUNC_SEMICOLON
+		| declaration_specifiers_no_const init_declarator_list_no_const PUNC_SEMICOLON
+		;
+
+declaration_specifiers_no_const
+		: type_specifier
+		| type_specifier declaration_specifiers_no_const
 		;
 
 
+init_declarator_list_no_const
+		: init_declarator_no_const
+		| init_declarator_list_no_const PUNC_COMMA init_declarator_no_const
+		;
+
+init_declarator_no_const
+		: declarator_no_const OP_EQUAL initializer
+		| declarator_no_const
+		;
+
+declarator_no_const
+		: direct_declarator_no_const
+		; /* not support pointer */
+
+direct_declarator_no_const
+		: TOKEN_ID
+		| PUNC_LPERAN declarator_no_const PUNC_RPERAN
+		| direct_declarator_no_const PUNC_LBRACKET TOKEN_INTEGER PUNC_RBRACKET /* todo may need to let int > 0*/
+		| direct_declarator_no_const PUNC_LPERAN PUNC_RPERAN
+		| direct_declarator_no_const PUNC_LPERAN parameter_list PUNC_RPERAN
+		| direct_declarator_no_const PUNC_LPERAN identifier_list PUNC_RPERAN
+		;
+
+////
 function_definition
-		: declaration_specifiers declarator declaration_list compound_statement
-		| declaration_specifiers declarator compound_statement
-		| KEY_VOID declarator declaration_list compound_statement
-		| KEY_VOID declarator compound_statement
+		: declaration_specifiers_no_const declarator_no_const declaration_list compound_statement
+		| declaration_specifiers_no_const declarator_no_const compound_statement
+		| KEY_VOID declarator_no_const declaration_list compound_statement
+		| KEY_VOID declarator_no_const compound_statement
 		;
 
 
@@ -107,18 +157,6 @@ designator
 		: PUNC_DOT TOKEN_ID
 		;
 
-declarator
-		: direct_declarator
-		; /* not support pointer */
-
-direct_declarator
-		: TOKEN_ID
-		| PUNC_LPERAN declarator PUNC_RPERAN
-		| direct_declarator PUNC_LBRACKET TOKEN_INTEGER PUNC_RBRACKET /* todo may need to let int > 0*/
-		| direct_declarator PUNC_LPERAN PUNC_RPERAN
-		| direct_declarator PUNC_LPERAN parameter_list PUNC_RPERAN
-		| direct_declarator PUNC_LPERAN identifier_list PUNC_RPERAN
-		;
 
 identifier_list
 		: TOKEN_ID
@@ -132,8 +170,8 @@ parameter_list
 		;
 
 parameter_declaration
-		: declaration_specifiers declarator
-		| declaration_specifiers
+		: declaration_specifiers_no_const declarator_no_const
+		| declaration_specifiers_no_const
 		; /* ignore abstract delaration here */
 
 compound_statement
