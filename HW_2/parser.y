@@ -274,7 +274,7 @@ unary_operator
 
 postfix_expression
 		: primary_expression
-		| postfix_expression PUNC_LBRACKET TOKEN_INTEGER PUNC_RBRACKET
+		| postfix_expression PUNC_LBRACKET expression PUNC_RBRACKET
 		| postfix_expression PUNC_LPERAN PUNC_RPERAN
 		| postfix_expression PUNC_LPERAN argument_expression_list PUNC_RPERAN
 		| postfix_expression PUNC_DOT TOKEN_ID
