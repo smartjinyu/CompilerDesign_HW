@@ -177,36 +177,12 @@ int yywrap(){
 */
 void print_token(int tokenType){
 	if(isTokenOn == 1){
-		/*
-		if(token>=10 && token<=13){
-			// type
-			fprintf(stdout,"#key:%s\n",yytext);
-			return;
-		}
-		if(token>=80 && token<=96){
-			// other keywords
-			fprintf(stdout,"#key:%s\n",yytext);
-			return;
-		}
-
-		if(token>=120 && token<=147){
-			// sdtiofuncs
-			fprintf(stdout,"#key:%s\n",yytext);
-			return;
-		}*/
 		if(tokenType == 0){
 			// key
 			fprintf(stdout,"#key:%s\n",yytext);
 			return;
 		}
 
-		/*
-		if(token == TOKEN_ID){
-			// identifier
-			fprintf(stdout,"#id:%s\n",yytext);
-			return;
-		}
-		*/
 		if(tokenType == 1){
 			// identifier
 			fprintf(stdout,"#id:%s\n",yytext);
@@ -225,19 +201,6 @@ void print_token(int tokenType){
 			return;
 		}
 
-		/*
-
-		if(token>=30 && token<=49){
-			// operation
-			fprintf(stdout,"#op:%s\n",yytext);
-			return;
-		}
-		if(token>=60 && token<=69){
-			// punctuation
-			fprintf(stdout,"#punc:%s\n",yytext);
-			return;
-		}
-		*/
 
 		if(tokenType == 4){
 			// string constant
@@ -252,69 +215,28 @@ void print_token(int tokenType){
 
 		}
 
-		/*
-		if(token == TOKEN_STRING){
-			// string
-			char text[256];
-			int i;
-			for(i=1;yytext[i]!='\042';i++){
-				text[i-1]=yytext[i];
-			}
-			text[i-1]='\0';
-			fprintf(stdout,"#string:%s\n",text);
-			return;
-		}
-		*/
-
 		if(tokenType == 5){
 			// char constant
 			fprintf(stdout,"#char:%s\n",yytext);
 			return;
 		}
-		/*
-		if(token == TOKEN_CHAR){
-			// char
-			fprintf(stdout,"#char:%s\n",yytext);
-			return;
-		}
-		*/
 
 		if(tokenType == 6){
 			// integer constant
 			fprintf(stdout,"#integer:%s\n",yytext);
 			return;
 		}
-		/*
-		if(token == TOKEN_INTEGER){
-			// integer
-			fprintf(stdout,"#integer:%s\n",yytext);
-			return;
-		}
-		*/
 		if(tokenType == 7){
 			// double constant
 			fprintf(stdout,"#double:%s\n",yytext);
 			return;
 		}
-		/*
-		if(token == TOKEN_DOUBLE){
-			// double
-			fprintf(stdout,"#double:%s\n",yytext);
-			return;
-		}
-		*/
 
 		if(tokenType == 8){
 			// sci constant
 			fprintf(stdout,"#sci:%s\n",yytext);
 			return;
 		}
-		/*
-		if(token == TOKEN_SCI){
-			// sci
-			fprintf(stdout,"#sci:%s\n",yytext);
-			return;
-		}*/
 
 	}
 
